@@ -130,22 +130,10 @@ if($flatsome_opt['blog_post_style'] == 'big-featured-image') { ?>
               );
               ?>
 
-
             </footer><!-- .entry-meta -->
 
 
-            <?php flatsome_content_nav( 'nav-below' ); ?>
           </article><!-- #post-## -->
-
-          <?php // Add content after blog post
-          if($flatsome_opt['blog_after_post']){ echo do_shortcode($flatsome_opt['blog_after_post']);}
-          ?>
-
-          <?php
-          // If comments are open or we have at least one comment, load up the comment template
-          if ( comments_open() || '0' != get_comments_number() )
-            comments_template();
-          ?>
 
         <?php endwhile; // end of the loop. ?>
 
