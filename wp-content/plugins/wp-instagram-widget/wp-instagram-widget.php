@@ -3,7 +3,7 @@
 Plugin Name: WP Instagram Widget
 Plugin URI: https://github.com/scottsweb/wp-instagram-widget
 Description: A WordPress widget for showing your latest Instagram photos.
-Version: 1.9.5
+Version: 1.9.8
 Author: Scott Evans
 Author URI: http://scott.ee
 Text Domain: wp-instagram-widget
@@ -51,7 +51,11 @@ class null_instagram_widget extends WP_Widget {
 		parent::__construct(
 			'null-instagram-feed',
 			__( 'Instagram', 'wp-instagram-widget' ),
-			array( 'classname' => 'null-instagram-feed', 'description' => esc_html__( 'Displays your latest Instagram photos', 'wp-instagram-widget' ) )
+			array(
+				'classname' => 'null-instagram-feed',
+				'description' => esc_html__( 'Displays your latest Instagram photos', 'wp-instagram-widget' ),
+				'customize_selective_refresh' => true
+			)
 		);
 	}
 
@@ -72,7 +76,7 @@ class null_instagram_widget extends WP_Widget {
 
 		if ( $username != '' ) {
 
-			$media_array = $this->scrape_instagram( $username, $limit );
+			$media_array = $this->scrape_instagram( $username );
 
 			if ( is_wp_error( $media_array ) ) {
 
@@ -81,20 +85,25 @@ class null_instagram_widget extends WP_Widget {
 			} else {
 
 				// filter for images only?
-				if ( $images_only = apply_filters( 'wpiw_images_only', FALSE ) )
+				if ( $images_only = apply_filters( 'wpiw_images_only', FALSE ) ) {
 					$media_array = array_filter( $media_array, array( $this, 'images_only' ) );
+				}
+
+				// slice list down to required limit
+				$media_array = array_slice( $media_array, 0, $limit );
 
 				// filters for custom classes
 				$ulclass = apply_filters( 'wpiw_list_class', 'instagram-pics instagram-size-' . $size );
 				$liclass = apply_filters( 'wpiw_item_class', '' );
 				$aclass = apply_filters( 'wpiw_a_class', '' );
 				$imgclass = apply_filters( 'wpiw_img_class', '' );
+				$template_part = apply_filters( 'wpiw_template_part', 'parts/wp-instagram-widget.php' );
 
 				?><ul class="<?php echo esc_attr( $ulclass ); ?>"><?php
 				foreach ( $media_array as $item ) {
 					// copy the else line into a new file (parts/wp-instagram-widget.php) within your theme and customise accordingly
-					if ( locate_template( 'parts/wp-instagram-widget.php' ) != '' ) {
-						include locate_template( 'parts/wp-instagram-widget.php' );
+					if ( locate_template( $template_part ) != '' ) {
+						include locate_template( $template_part );
 					} else {
 						echo '<li class="'. esc_attr( $liclass ) .'"><a href="'. esc_url( $item['link'] ) .'" target="'. esc_attr( $target ) .'"  class="'. esc_attr( $aclass ) .'"><img src="'. esc_url( $item[$size] ) .'"  alt="'. esc_attr( $item['description'] ) .'" title="'. esc_attr( $item['description'] ).'"  class="'. esc_attr( $imgclass ) .'"/></a></li>';
 					}
@@ -106,7 +115,7 @@ class null_instagram_widget extends WP_Widget {
 		$linkclass = apply_filters( 'wpiw_link_class', 'clear' );
 
 		if ( $link != '' ) {
-			?><p class="<?php echo esc_attr( $linkclass ); ?>"><a href="//instagram.com/<?php echo esc_attr( trim( $username ) ); ?>" rel="me" target="<?php echo esc_attr( $target ); ?>"><?php echo wp_kses_post( $link ); ?></a></p><?php
+			?><p class="<?php echo esc_attr( $linkclass ); ?>"><a href="<?php echo trailingslashit( '//instagram.com/' . esc_attr( trim( $username ) ) ); ?>" rel="me" target="<?php echo esc_attr( $target ); ?>"><?php echo wp_kses_post( $link ); ?></a></p><?php
 		}
 
 		do_action( 'wpiw_after_widget', $instance );
@@ -157,12 +166,12 @@ class null_instagram_widget extends WP_Widget {
 	}
 
 	// based on https://gist.github.com/cosmocatalano/4544576
-	function scrape_instagram( $username, $slice = 9 ) {
+	function scrape_instagram( $username ) {
 
 		$username = strtolower( $username );
 		$username = str_replace( '@', '', $username );
 
-		if ( false === ( $instagram = get_transient( 'instagram-a3-'.sanitize_title_with_dashes( $username ) ) ) ) {
+		if ( false === ( $instagram = get_transient( 'instagram-a5-'.sanitize_title_with_dashes( $username ) ) ) ) {
 
 			$remote = wp_remote_get( 'http://instagram.com/'.trim( $username ) );
 
@@ -196,16 +205,16 @@ class null_instagram_widget extends WP_Widget {
 				$image['display_src'] = preg_replace( '/^https?\:/i', '', $image['display_src'] );
 
 				// handle both types of CDN url
-				if ( (strpos( $image['thumbnail_src'], 's640x640' ) !== false ) ) {
+				if ( ( strpos( $image['thumbnail_src'], 's640x640' ) !== false ) ) {
 					$image['thumbnail'] = str_replace( 's640x640', 's160x160', $image['thumbnail_src'] );
 					$image['small'] = str_replace( 's640x640', 's320x320', $image['thumbnail_src'] );
 				} else {
 					$urlparts = wp_parse_url( $image['thumbnail_src'] );
 					$pathparts = explode( '/', $urlparts['path'] );
 					array_splice( $pathparts, 3, 0, array( 's160x160' ) );
-					$image['thumbnail'] = '//' . $urlparts['host'] . implode('/', $pathparts);
+					$image['thumbnail'] = '//' . $urlparts['host'] . implode( '/', $pathparts );
 					$pathparts[3] = 's320x320';
-					$image['small'] = '//' . $urlparts['host'] . implode('/', $pathparts);
+					$image['small'] = '//' . $urlparts['host'] . implode( '/', $pathparts );
 				}
 
 				$image['large'] = $image['thumbnail_src'];
@@ -223,7 +232,7 @@ class null_instagram_widget extends WP_Widget {
 
 				$instagram[] = array(
 					'description'   => $caption,
-					'link'		  	=> '//instagram.com/p/' . $image['code'],
+					'link'		  	=> trailingslashit( '//instagram.com/p/' . $image['code'] ),
 					'time'		  	=> $image['date'],
 					'comments'	  	=> $image['comments']['count'],
 					'likes'		 	=> $image['likes']['count'],
@@ -238,14 +247,13 @@ class null_instagram_widget extends WP_Widget {
 			// do not set an empty transient - should help catch private or empty accounts
 			if ( ! empty( $instagram ) ) {
 				$instagram = base64_encode( serialize( $instagram ) );
-				set_transient( 'instagram-a3-'.sanitize_title_with_dashes( $username ), $instagram, apply_filters( 'null_instagram_cache_time', HOUR_IN_SECONDS*2 ) );
+				set_transient( 'instagram-a5-'.sanitize_title_with_dashes( $username ), $instagram, apply_filters( 'null_instagram_cache_time', HOUR_IN_SECONDS*2 ) );
 			}
 		}
 
 		if ( ! empty( $instagram ) ) {
 
-			$instagram = unserialize( base64_decode( $instagram ) );
-			return array_slice( $instagram, 0, $slice );
+			return unserialize( base64_decode( $instagram ) );
 
 		} else {
 

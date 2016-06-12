@@ -4,7 +4,7 @@ Tags: facebook, register, login, social connect, social, facebook connect
 Donate link: https://www.facebook.com/nextendweb
 Requires at least: 3.0
 Tested up to: 4.2.4
-Stable tag: 1.5.7
+Stable tag: 1.5.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ One click registration & login plugin for Facebook? Easy installation? Is it tot
 
 == Description ==
 
-Check the [DEMO](http://www.nextendweb.com/wp-login.php) on our site.
+Check the [DEMO](http://secure.nextendweb.com/) on our site.
 
 Also we created a [Social Connect button generator](http://www.nextendweb.com/social-connect-button-generator) for this plugin. This allows you to create fancy login buttons. 
 
@@ -71,6 +71,12 @@ After you activated the plugin, the plugin will autmatically
 2. Our Social Connect plugins in the profile page for account linking
 
 == Changelog ==
+
+= 1.5.9 =
+* Nonce added to backend
+
+= 1.5.8 =
+* Vulnerability fix
 
 = 1.5.7 =
 * Facebook 2.4 api support added
