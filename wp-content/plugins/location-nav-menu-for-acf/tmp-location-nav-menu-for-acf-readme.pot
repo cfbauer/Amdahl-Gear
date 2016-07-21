@@ -1,0 +1,66 @@
+msgid ""
+msgstr "MIME-Version: 1.0\n"
+
+#. Name.
+msgid "Location &quot;Nav Menu&quot; for ACF"
+msgstr ""
+
+#. Short description.
+msgid "Say NO to complex, inconvenient, and unpractical workarounds and easily create powerful mega-menus and custom features you&#039;ve always wanted."
+msgstr ""
+
+#. Screenshot description.
+msgid "Back-end View"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Unleash the full power of the ACF PRO plugin to extend WordPress menu functionality. With this add-on, you can display custom fields of different types directly under general menu field items while editing your menu in the admin panel."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Advanced Custom Fields Compatibility"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "This add-on works smoothly with version 5+."
+msgstr ""
+
+#. Found in installation list item.
+msgid "From the dashboard of your site, navigate to Plugins → Add New."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Select the Upload option and hit \"Choose File\"."
+msgstr ""
+
+#. Found in installation list item.
+msgid "When the popup appears, select the acf-menu-location.zip file from your computer."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Follow the on-screen instructions and wait as the upload completes."
+msgstr ""
+
+#. Found in installation list item.
+msgid "When it's finished, activate the plugin via the prompt. A message will show confirming activation was successful."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Initial release"
+msgstr ""
+
+#. Found in faq header.
+msgid "How can I display a custom menu item field in the front-end?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Can I add fields to a certain menu only?"
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "Menu items in the database are stored the same way as regular posts. Therefore, fields set to menu items use the same operation logic as posts. You don't have to use any additional functions or third-party parameters. However, since the output of menu items is often implemented outside the WordPress loop, you must specify the menu item ID (i.e. $item-&gt;ID, not $item-&gt;object_id) as the second parameter of the function get_field (or the_field etc.)."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "Yes, when you select the location while creating a group of fields, you can select one (or more, using the logic of the rules) from the existing WordPress menus on your website. Fields are added to all existing menus by default."
+msgstr ""
